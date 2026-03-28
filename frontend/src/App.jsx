@@ -1,28 +1,33 @@
 import { useEffect, useState } from 'react';
-import { fetchMetrics, fetchSummary, fetchReliability } from './api';
+import { fetchMetrics, fetchSummary, fetchReliability, fetchSaturation } from './api';
 import StatusCard from './components/StatusCard';
 import SummaryBar from './components/SummaryBar';
 import ReliabilityCard from './components/ReliabilityCard';
+import SaturationCard from './components/SaturationCard';
 import LatencyChart from './components/LatencyChart';
 import MetricsTable from './components/MetricsTable';
 import './App.css';
+import PulsingRingSVG from "./components/PulsingRingSVG";
 
 export default function App() {
     const [metrics,     setMetrics]     = useState([]);
     const [summary,     setSummary]     = useState(null);
     const [reliability, setReliability] = useState(null);
+    const [saturation,  setSaturation]  = useState(null);
     const [backendUp,   setBackendUp]   = useState(true);
 
     const refresh = async () => {
         try {
-            const [m, s, r] = await Promise.all([
+            const [m, s, r, sat] = await Promise.all([
                 fetchMetrics(),
                 fetchSummary(),
-                fetchReliability()
+                fetchReliability(),
+                fetchSaturation()
             ]);
             setMetrics(m);
             setSummary(s);
             setReliability(r);
+            setSaturation(sat);
             setBackendUp(true);
         } catch (err) {
             setBackendUp(false);
@@ -39,7 +44,10 @@ export default function App() {
         <div className="app">
             <header>
                 <div className="header-left">
-                    <h1>WatchTower</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <PulsingRingSVG />
+                        <h1>WatchTower</h1>
+                    </div>
                     <span className="subtitle">Lightweight Observability System</span>
                 </div>
                 <div className="header-right">
@@ -60,7 +68,11 @@ export default function App() {
                 <ReliabilityCard reliability={reliability} />
             </div>
 
-            <LatencyChart metrics={metrics} />
+            <div className="grid-bottom">
+                <LatencyChart metrics={metrics} />
+                <SaturationCard saturation={saturation} />
+            </div>
+
             <MetricsTable metrics={metrics} />
         </div>
     );

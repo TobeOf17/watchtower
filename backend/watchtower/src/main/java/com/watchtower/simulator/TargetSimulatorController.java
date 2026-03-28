@@ -1,16 +1,18 @@
 package com.watchtower.simulator;
 
+import com.sun.management.OperatingSystemMXBean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+
+import java.lang.management.ManagementFactory;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/health")
 public class TargetSimulatorController {
 
     private static volatile String mode = "normal";
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     @GetMapping
     public ResponseEntity<String> health() throws InterruptedException {
@@ -29,5 +31,26 @@ public class TargetSimulatorController {
     public ResponseEntity<String> setMode(@RequestParam String m) {
         mode = m;
         return ResponseEntity.ok("Mode set to: " + m);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Object>> stats() {
+        OperatingSystemMXBean os = (OperatingSystemMXBean)
+                ManagementFactory.getOperatingSystemMXBean();
+
+        double cpuLoad = os.getSystemCpuLoad() * 100;
+        if (cpuLoad < 0) cpuLoad = 0;
+
+        long totalMemory         = Runtime.getRuntime().totalMemory();
+        long freeMemory          = Runtime.getRuntime().freeMemory();
+        long usedMemory          = totalMemory - freeMemory;
+        double memoryUsedPercent = (double) usedMemory / totalMemory * 100;
+
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("cpuPercent",    Math.round(cpuLoad * 10.0) / 10.0);
+        stats.put("memoryPercent", Math.round(memoryUsedPercent * 10.0) / 10.0);
+        stats.put("memoryUsedMb",  usedMemory / (1024 * 1024));
+        stats.put("memoryTotalMb", totalMemory / (1024 * 1024));
+        return ResponseEntity.ok(stats);
     }
 }

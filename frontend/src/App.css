@@ -216,3 +216,29 @@ tr:hover td { background: var(--bg); }
     background: #c0392b;
     animation: none;
 }
+
+.saturation-bar-bg {
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.saturation-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.4s ease;
+}
+
+.saturation-bar-fill.ok    { background: var(--accent); }
+.saturation-bar-fill.warn  { background: #d4a017; }
+.saturation-bar-fill.error { background: var(--danger); }
+
+.warn { color: #a07800; font-weight: 600; }
+.grid-bottom {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
