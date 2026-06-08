@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface MetricRepository extends JpaRepository<MetricEntry, Long> {
 
-    List<MetricEntry> findTop100ByOrderByTimestampDesc();
+    List<MetricEntry> findTop50ByOrderByTimestampDesc();
 
     @Query("SELECT COUNT(m) FROM MetricEntry m WHERE m.isSuccess = false")
     Long countFailures();

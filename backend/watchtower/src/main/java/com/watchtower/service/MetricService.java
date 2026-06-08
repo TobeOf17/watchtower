@@ -20,7 +20,7 @@ public class MetricService {
     }
 
     public List<MetricEntry> getRecent() {
-        return repo.findTop100ByOrderByTimestampDesc();
+        return repo.findTop50ByOrderByTimestampDesc();
     }
 
     public Map<String, Object> getSummary() {

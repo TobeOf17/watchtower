@@ -38,7 +38,7 @@ public class MetricPoller {
         this.restTemplate = new RestTemplate(factory);
     }
 
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(fixedRate = 3000)
     public void poll() {
         pollExecutor.submit(() -> {
             try {
